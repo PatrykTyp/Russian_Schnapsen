@@ -1,0 +1,8 @@
+x64/
+.vs/
+Project_Russian_Schnapsen/x64/
+Project_Russian_Schnapsen/*.dll
+Project_Russian_Schnapsen/*.aps
+Project_Russian_Schnapsen/*.vcxproj.user
+Project_Russian_Schnapsen/*.vcxproj.filters
+Project_Russian_Schnapsen/*.vcxproj
