@@ -1,5 +1,10 @@
 #include "Card.h"
 
+sf::Texture* Card::ptrTexture;
+sf::Texture Card::cardUsed;
+sf::Texture Card::deckTexture;
+sf::Texture Card::cardBack;
+
 void Card::loadCard(Card tab[]) {
 	std::string color[4] = { "pik", "trefl", "karo", "kier" }, figure[6] = { "9","10","J","Q","K","A" };
 	int wart{};
@@ -22,15 +27,15 @@ void Card::loadCard(Card tab[]) {
 /*
 * Przypisanie grafiki do poszczególnych kart
 */
-void Card::assignImg(Card tab[], sf::Texture* texture) {
-	sf::Vector2u taliaSize = texture->getSize();
+void Card::assignImg(Card tab[]) {
+	sf::Vector2u taliaSize = deckTexture.getSize();
 	taliaSize.x /= 6;
 	taliaSize.y /= 4;
 	float a = 0, b = 20.0f;
 	int n = 0;
 	for (int i = 0; i < 4; i++) {
 		for (int j = 0; j < 6; j++) {
-			tab[n].cardImg.setTexture(*texture);
+			tab[n].cardImg.setTexture(deckTexture);
 			tab[n].cardImg.setTextureRect(sf::IntRect(taliaSize.x * j, taliaSize.y * i, taliaSize.x, taliaSize.y));
 			tab[n].cardImg.setPosition(sf::Vector2f(a + 20.0f, b));
 			tab[n].cardImg.setOrigin(sf::Vector2f(tab[n].cardImg.getGlobalBounds().width / 2, tab[n].cardImg.getGlobalBounds().height / 2));
@@ -117,4 +122,12 @@ void Card::deal(Card gracz1[], Card gracz2[], Card gracz3[], Card talia[], Card 
 	}
 }
 
+void Card::setTextures() {
+	
+}
+
+sf::Texture Card::getTextureUsed() {
+	ptrTexture = &cardUsed;
+	return *ptrTexture;
+}
 

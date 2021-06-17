@@ -1,12 +1,14 @@
 #include "Move.h"
 
-bool Move::isBidding = false;
+bool Move::isStock = false;
+bool Move::checkCard = true;
 
-int Move::cardBidding = 0;
+int Move::turn = 0;
+int Move::cardStock = 0;
 int Move::selectedCard = 0;
 int Move::isReset = 0;
 int Move::cardUsed[8] = { -1,-1,-1 ,-1 ,-1 ,-1 ,-1 ,-1 };
-int Move::cardBiddingUsed[3] = { -1,-1,-1 };
+int Move::cardStockUsed[3] = { -1,-1,-1 };
 
 sf::RectangleShape Move::chooseCard;
 
@@ -20,6 +22,8 @@ void Move::init() {
 	chooseCard.setFillColor(sf::Color::Red);
 	chooseCard.setOrigin(sf::Vector2f(chooseCard.getGlobalBounds().width / 2, chooseCard.getGlobalBounds().height / 2));
 	chooseCard.setPosition(sf::Vector2f(490.0f, 470.0f));
+
+	Bidding::init();
 }
 
 void Move::left() {
@@ -33,8 +37,8 @@ void Move::left() {
 	* W zale¿noœci od tego albo poruszamy siê po kartach musiku rozdaj¹c je graczom,
 	* albo poruszamy siê po w³asnych kartach
 	*/
-	if (!isBidding) {
-		cardBidding = 0;
+	if (!isStock) {
+		cardStock = 0;
 		/*
 		* Sprawdzenie, czy nastêpna karta nie zosta³a ju¿ u¿yta
 		* Je¿eli karta s¹siednia, na któr¹ chcemy prze³¹czyæ znacznik jest u¿yta,
@@ -58,14 +62,14 @@ void Move::left() {
 	*/
 	else {
 		selectedCard = 0;
-		if (cardBidding >= 0) {
+		if (cardStock >= 0) {
 			do {
-				if (cardBidding == 0)
-					cardBidding = 2;
+				if (cardStock == 0)
+					cardStock = 2;
 				else
-					cardBidding--;
-			} while (cardBidding == cardBiddingUsed[cardBidding]);
-			chooseCard.setPosition(sf::Vector2f(Players::bidding[cardBidding].cardImg.getPosition().x, Players::bidding[cardBidding].cardImg.getPosition().y + 70.0f));
+					cardStock--;
+			} while (cardStock == cardStockUsed[cardStock]);
+			chooseCard.setPosition(sf::Vector2f(Players::stock[cardStock].cardImg.getPosition().x, Players::stock[cardStock].cardImg.getPosition().y + 70.0f));
 		}
 	}
 }
@@ -76,8 +80,8 @@ void Move::right() {
 	*/
 	if (isReset == 7)
 		chooseCard.setPosition(sf::Vector2f(Players::player1[0].cardImg.getPosition().x, Players::player1[0].cardImg.getPosition().y + 70.0f));
-	if (!isBidding) {
-		cardBidding = 0;
+	if (!isStock) {
+		cardStock = 0;
 		/*
 		* Sprawdzenie, czy nastêpna karta nie zosta³a ju¿ u¿yta
 		* Je¿eli karta s¹siednia, na któr¹ chcemy prze³¹czyæ znacznik jest u¿yta,
@@ -101,14 +105,74 @@ void Move::right() {
 	*/
 	else {
 		selectedCard = 0;
-		if (cardBidding <= 2) {
+		if (cardStock <= 2) {
 			do {
-				if (cardBidding == 2)
-					cardBidding = 0;
+				if (cardStock == 2)
+					cardStock = 0;
 				else
-					cardBidding++;
-			} while (cardBidding == cardBiddingUsed[cardBidding]);
-			chooseCard.setPosition(sf::Vector2f(Players::bidding[cardBidding].cardImg.getPosition().x, Players::bidding[cardBidding].cardImg.getPosition().y + 70.0f));
+					cardStock++;
+			} while (cardStock == cardStockUsed[cardStock]);
+			chooseCard.setPosition(sf::Vector2f(Players::stock[cardStock].cardImg.getPosition().x, Players::stock[cardStock].cardImg.getPosition().y + 70.0f));
 		}
 	}
 }
+
+void Move::setStock(bool stock) {
+	isStock = stock;
+}
+
+bool Move::getStock() {
+	return isStock;
+}
+
+int Move::getSelectedCard() {
+	return selectedCard;
+}
+
+void Move::choosenCard(Card& card) {
+	card.cardImg.setPosition(sf::Vector2f(490.0f, 400.0f));
+	chooseCard.setPosition(sf::Vector2f(card.cardImg.getPosition().x, card.cardImg.getPosition().y + 70.0f));
+}
+
+void Move::turnBack() {
+	sf::Vector2u backSize = Card::cardBack.getSize();
+	backSize.x /= 6;
+	backSize.y /= 4;
+	int n = 0;
+	for (int i = 0; i < 4; i++) {
+		for (int j = 0; j < 6; j++) {
+			Players::player2[n].cardImg.setTexture(Card::cardBack);
+			Players::player2[n].cardImg.setTextureRect(sf::IntRect(backSize.x * j, backSize.y * i, backSize.x, backSize.y));
+			Players::player3[n].cardImg.setTexture(Card::cardBack);
+			Players::player3[n].cardImg.setTextureRect(sf::IntRect(backSize.x * j, backSize.y * i, backSize.x, backSize.y));
+			if (n == 6)
+				break;
+			else
+				n++;
+		}
+
+	}
+}
+
+void Move::turnBack(Card& card) {
+	sf::Vector2u backSize = Card::cardBack.getSize();
+	backSize.x /= 6;
+	backSize.y /= 4;
+	int x = card.value % 6;
+	int y = card.value / 6;
+
+	card.cardImg.setTexture(Card::cardBack);
+	card.cardImg.setTextureRect(sf::IntRect(backSize.x * x, backSize.y * y, backSize.x, backSize.y));
+}
+
+void Move::turnFront(Card& card) {
+	sf::Vector2u frontSize = Card::deckTexture.getSize();
+	frontSize.x /= 6;
+	frontSize.y /= 4;
+	int x = card.value % 6;
+	int y = card.value / 6;
+
+	card.cardImg.setTexture(Card::deckTexture);
+	card.cardImg.setTextureRect(sf::IntRect(frontSize.x * x, frontSize.y * y, frontSize.x, frontSize.y));
+}
+

@@ -1,6 +1,6 @@
 #include "Gra.h"
 
-Gra::Gra():
+Gra::Gra() :
 	window(sf::VideoMode(1200, 800), "Russian Schnapsen", sf::Style::Close | sf::Style::Resize),
 	menu(window.getSize().x, window.getSize().y),
 	rules(),
@@ -9,15 +9,17 @@ Gra::Gra():
 	view.setSize(sf::Vector2f(1200.0f, 800.0f));
 	view.setCenter(sf::Vector2f(600.0f, 400.0f));
 
-	deckTexture.loadFromFile("ex/image/talia.png");
 	tableTexture.loadFromFile("ex/image/plansza.png");
-	cardUsed.loadFromFile("ex/image/uzyta.png");
-	cardBack.loadFromFile("ex/image/tyl.png");
+	
+	Card::cardUsed.loadFromFile("ex/image/uzyta.png");
+	Card::cardBack.loadFromFile("ex/image/tyl.png");
+	Card::deckTexture.loadFromFile("ex/image/talia.png");
 
 	table.setTexture(tableTexture);
 
 	Card::loadCard(Players::deck);
-	Card::assignImg(Players::deck, &deckTexture);
+	Card::assignImg(Players::deck);
+	Card::setTextures();
 
 	Move::init();
 }
@@ -57,9 +59,9 @@ void Gra::course() {
 					case 0:
 						windowFocus = 1;
 						Card::reshuffleCard(Players::deck);
-						Card::deal(Players::player1, Players::player2, Players::player3, Players::deck, Players::bidding);
+						Card::deal(Players::player1, Players::player2, Players::player3, Players::deck, Players::stock);
 						cardPosition();
-						cardTurn();
+						//cardTurn();
 						break;
 						/*
 						* Przejscie do zasad gry
@@ -88,13 +90,68 @@ void Gra::course() {
 					//reset();
 					windowFocus = 0;
 					break;
+				case sf::Keyboard::A:
+					if (!Bidding::isBidding) {
+						if (Move::getStock()) {
+							stockToPlayers();
+							Move::cardStockUsed[Move::cardStock] = Move::cardStock;
+							if (Move::cardStock != 2) {
+								Move::right();
+							}
+							else {
+								Move::left();
+							}
+						}
+						else {
+							if (GameMechanics::throwCard) {
+								if (GameMechanics::bidder == 1) {
+									Move::choosenCard(player1[Move::getSelectedCard()]);
+									GameMechanics::sendValues(player1[Move::getSelectedCard()], choosenByBot);
+									Move::cardUsed[Move::getSelectedCard()] = Move::getSelectedCard();
+
+									Move::right();
+
+									GameMechanics::throwCard = false;
+								}
+								else if (GameMechanics::bidder == 2) {
+									choosenByBot = GameMechanics::sendValuesBot(player2, GameMechanics::a);
+									GameMechanics::bidder = 1;
+								}
+								else if (GameMechanics::bidder == 3) {
+									choosenByBot = GameMechanics::sendValuesBot(player3, GameMechanics::b);
+									GameMechanics::bidder = 1;
+								}
+							}
+						}
+					}
 				case sf::Keyboard::Left:
-					if (Move::isReset != 7)
+					if (Move::isReset != 7 && !Bidding::isBidding )
 						Move::left();
 					break;
 				case sf::Keyboard::Right:
-					if (Move::isReset != 7)
+					if (Move::isReset != 7 && !Bidding::isBidding)
 						Move::right();
+					break;
+				case sf::Keyboard::L:
+					if (Bidding::isBidding) {
+						if (Bidding::whoWonBid <= 3 && Bidding::whoWonBid >= 1) {
+							Bidding::bidding();
+						}
+						else{
+							Bidding::checkBid();
+							Bidding::whoWonBid = 1;
+						}
+
+					}
+				case sf::Keyboard::Down:
+					if (Bidding::isBidding) {
+						Bidding::down();
+					}
+					break;
+				case sf::Keyboard::Up:
+					if (Bidding::isBidding) {
+						Bidding::up();
+					}
 					break;
 				}
 			}
@@ -154,13 +211,22 @@ void Gra::draw() {
 	else if (windowFocus == 1) {
 		window.setView(view);
 		window.draw(table);
-
-		window.draw(Move::chooseCard);
+		if (!Bidding::isBidding) {
+			window.draw(Move::chooseCard);
+			if (Move::getStock()) {
+				for (int i = 0; i < 3; i++)
+					window.draw(Players::stock[i].cardImg);
+			}
+		}
+		else {
+			Bidding::draw(window);
+		}
 		for (int i = 0; i < 8; i++) {
 			window.draw(Players::player1[i].cardImg);
 			window.draw(Players::player2[i].cardImg);
 			window.draw(Players::player3[i].cardImg);
 		}
+		
 	}
 	else if (windowFocus == 2) {
 		rules.draw(window);
@@ -176,20 +242,20 @@ void Gra::cardPosition() {
 		Players::player2[i].cardImg.setPosition(sf::Vector2f(72.0f + (97.5f * i), 721.0f));
 	}
 	for (int i = 0; i < 3; i++) {
-		Players::bidding[i].cardImg.setPosition(sf::Vector2f(490.0f + (114.0f * i), 400.0f));
+		Players::stock[i].cardImg.setPosition(sf::Vector2f(490.0f + (114.0f * i), 400.0f));
 	}
 }
 
 void Gra::cardTurn() {
-	sf::Vector2u tylSize = cardBack.getSize();
+	sf::Vector2u tylSize = Card::cardBack.getSize();
 	tylSize.x /= 6;
 	tylSize.y /= 4;
 	int n = 0;
 	for (int i = 0; i < 4; i++) {
 		for (int j = 0; j < 6; j++) {
-			Players::player2[n].cardImg.setTexture(cardBack);
+			Players::player2[n].cardImg.setTexture(Card::cardBack);
 			Players::player2[n].cardImg.setTextureRect(sf::IntRect(tylSize.x * j, tylSize.y * i, tylSize.x, tylSize.y));
-			Players::player3[n].cardImg.setTexture(cardBack);
+			Players::player3[n].cardImg.setTexture(Card::cardBack);
 			Players::player3[n].cardImg.setTextureRect(sf::IntRect(tylSize.x * j, tylSize.y * i, tylSize.x, tylSize.y));
 			if (n == 6)
 				break;
@@ -200,24 +266,24 @@ void Gra::cardTurn() {
 }
 
 void Gra::oneCardBack(Card& card) {
-	sf::Vector2u size = cardBack.getSize();
+	sf::Vector2u size = Card::cardBack.getSize();
 	size.x /= 6;
 	size.y /= 4;
 	int x = card.value % 6;
 	int y = card.value / 6;
 
-	card.cardImg.setTexture(cardBack);
+	card.cardImg.setTexture(Card::cardBack);
 	card.cardImg.setTextureRect(sf::IntRect(size.x * x, size.y * y, size.x, size.y));
 }
 
 void Gra::oneCardFront(Card& card) {
-	sf::Vector2u size = deckTexture.getSize();
+	sf::Vector2u size = Card::deckTexture.getSize();
 	size.x /= 6;
 	size.y /= 4;
 	int x = card.value % 6;
 	int y = card.value / 6;
 
-	card.cardImg.setTexture(deckTexture);
+	card.cardImg.setTexture(Card::deckTexture);
 	card.cardImg.setTextureRect(sf::IntRect(size.x * x, size.y * y, size.x, size.y));
 }
 

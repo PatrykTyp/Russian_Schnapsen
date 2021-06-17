@@ -3,7 +3,7 @@
 class Players{
 
 public:
-	static Card deck[], bidding[];
+	static Card deck[], stock[];
 	static Card player1[], player2[], player3[];
 };
 

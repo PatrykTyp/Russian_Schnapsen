@@ -6,19 +6,20 @@
 #include "Card.h"
 #include "Players.h"
 #include "Move.h"
+#include "GameMechanics.h"
+#include "Stock.h"
 
 
-class Gra{
+class Gra : public Stock{
 private:
 	sf::RenderWindow window;
 	sf::View view;
 	int windowFocus;
 
 	sf::Sprite table;
-	sf::Texture deckTexture;
 	sf::Texture tableTexture;
-	sf::Texture cardBack;
-	sf::Texture cardUsed;
+	
+	Card choosenByBot;
 
 	void course();
 	void draw();
