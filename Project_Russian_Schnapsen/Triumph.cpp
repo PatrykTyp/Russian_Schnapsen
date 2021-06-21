@@ -5,7 +5,6 @@ std::pair<std::pair<bool, int>, std::string> Triumph::tKing[4];
 std::pair<std::pair<bool, int>, std::string> Triumph::tQueen[4];
 
 void Triumph::isTriumph(Card playerDeck[]) {
-	std::cout << "is triumph" << std::endl;
 	for (int i = 0; i < 8; i++) {
 		if (playerDeck[i].figure == "K") {
 			if (playerDeck[i].color == "karo") {

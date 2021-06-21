@@ -27,7 +27,6 @@ void Move::init() {
 }
 
 void Move::left() {
-	std::cout << "left" << std::endl;
 	if (isReset == 7)
 		chooseCard.setPosition(sf::Vector2f(Players::player1[0].cardImg.getPosition().x, Players::player1[0].cardImg.getPosition().y + 70.0f));
 	if (!isStock) {
@@ -57,7 +56,6 @@ void Move::left() {
 }
 
 void Move::right() {
-	std::cout << "right" << std::endl;
 	if (isReset == 7)
 		chooseCard.setPosition(sf::Vector2f(Players::player1[0].cardImg.getPosition().x, Players::player1[0].cardImg.getPosition().y + 70.0f));
 	if (!isStock) {
@@ -101,7 +99,6 @@ void Move::choosenCard(Card& card) {
 }
 
 void Move::turnBack() {
-	std::cout << "move turn back" << std::endl;
 	sf::Vector2u backSize = Card::cardBack.getSize();
 	backSize.x /= 6;
 	backSize.y /= 4;
@@ -122,7 +119,6 @@ void Move::turnBack() {
 }
 
 void Move::turnBack(Card& card) {
-	std::cout << "move turn back 1" << std::endl;
 	sf::Vector2u backSize = Card::cardBack.getSize();
 	backSize.x /= 6;
 	backSize.y /= 4;
@@ -134,7 +130,6 @@ void Move::turnBack(Card& card) {
 }
 
 void Move::turnFront(Card& card) {
-	std::cout << "move turn fornt" << std::endl;
 	sf::Vector2u frontSize = Card::deckTexture.getSize();
 	frontSize.x /= 6;
 	frontSize.y /= 4;

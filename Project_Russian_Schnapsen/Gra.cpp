@@ -86,7 +86,6 @@ void Gra::course() {
 					windowFocus = 0;
 					break;
 				case sf::Keyboard::A:
-					std::cout << "is Bidding: " << Bidding::isBidding << "        throwCard: " << GameMechanics::throwCard << std::endl;
 					if (!Bidding::isBidding) {
 						if (Move::getStock()) {
 							stockToPlayers();
@@ -139,7 +138,6 @@ void Gra::course() {
 					}
 					break;
 				case sf::Keyboard::R:
-					std::cout << "Wykonuje sie RRRRRRRRawr" << std::endl;
 					Bidding::isReset = true;
 					reset();
 					break;
@@ -264,7 +262,6 @@ void Gra::draw() {
 }
 
 void Gra::cardPosition() {
-	std::cout << "Card position" << std::endl;
 	for (int i = 0; i < 7; i++) {
 		Players::player1[i].cardImg.setPosition(sf::Vector2f(72.0f + (97.5f * i), 79.0f));
 		Players::player3[i].cardImg.setPosition(sf::Vector2f(1115.0f, 59.0f + (97.0f * i)));
@@ -277,7 +274,6 @@ void Gra::cardPosition() {
 }
 
 void Gra::cardTurn() {
-	std::cout << "Card turn" << std::endl;
 	sf::Vector2u tylSize = Card::cardBack.getSize();
 	tylSize.x /= 6;
 	tylSize.y /= 4;
@@ -297,7 +293,6 @@ void Gra::cardTurn() {
 }
 
 void Gra::oneCardBack(Card& card) {
-	std::cout << "Card 1 turn" << std::endl;
 	sf::Vector2u size = Card::cardBack.getSize();
 	size.x /= 6;
 	size.y /= 4;
@@ -309,7 +304,6 @@ void Gra::oneCardBack(Card& card) {
 }
 
 void Gra::oneCardFront(Card& card) {
-	std::cout << "Card return" << std::endl;
 	sf::Vector2u size = Card::deckTexture.getSize();
 	size.x /= 6;
 	size.y /= 4;

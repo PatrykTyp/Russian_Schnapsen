@@ -6,7 +6,6 @@ sf::Texture Card::deckTexture;
 sf::Texture Card::cardBack;
 
 void Card::loadCard(Card tab[]) {
-	std::cout << "load" << std::endl;
 	std::string color[4] = { "pik", "trefl", "karo", "kier" }, figure[6] = { "9","10","J","Q","K","A" };
 	int wart{};
 	for (int i = 0; i < 4; i++) {
@@ -23,7 +22,6 @@ void Card::loadCard(Card tab[]) {
 }
 
 void Card::assignImg(Card tab[]) {
-	std::cout << "assing img" << std::endl;
 	sf::Vector2u taliaSize = deckTexture.getSize();
 	taliaSize.x /= 6;
 	taliaSize.y /= 4;
@@ -46,7 +44,6 @@ void Card::assignImg(Card tab[]) {
 }
 
 void Card::reshuffleCard(Card tab[]) {
-	std::cout << "reshuffle" << std::endl;
 	Card tmp;
 	std::random_device device;
 	std::mt19937 generator(device());
@@ -71,7 +68,6 @@ void Card::reshuffleCard(Card tab[]) {
 }
 
 void Card::deal(Card gracz1[], Card gracz2[], Card gracz3[], Card talia[], Card musik[]) {
-	std::cout << "deal" << std::endl;
 	int licznik{}, iloscKartWRece{};
 
 	for (int i = 0; i < 21; i++) {

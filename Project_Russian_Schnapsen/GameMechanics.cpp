@@ -15,7 +15,6 @@ Card* GameMechanics::previousCardP3Ptr = nullptr;
 
 
 void GameMechanics::sendValues(Card& playerCard, Card& botCard) {
-	std::cout << "send values" << std::endl;
 	Card cardP2, cardP3;
 
 	if (whoFirst.first == true && whoFirst.second == true) {
@@ -42,7 +41,6 @@ void GameMechanics::sendValues(Card& playerCard, Card& botCard) {
 }
 
 Card GameMechanics::sendValuesBot(Card botCard[], float position) {
-	std::cout << "send values bot 1" << std::endl;
 	int indexOfCard{}, value{};
 	
 	if (value == 0 && indexOfCard == 0) {
@@ -66,7 +64,6 @@ Card GameMechanics::sendValuesBot(Card botCard[], float position) {
 }
 
 Card GameMechanics::sendValuesBot(Card& playerCard, Card botCard[], float position) {
-	std::cout << "send values bot 2" << std::endl;
 	int indexOfCard{}, value{};
 
 	for (int i = 0; i < 8; i++) {
@@ -98,7 +95,6 @@ Card GameMechanics::sendValuesBot(Card& playerCard, Card botCard[], float positi
 }
 
 void GameMechanics::getCardAddress(Card& botCard) {
-	std::cout << "get card address" << std::endl;
 	
 	if (who == 0) {
 		previousCardP2Ptr = &botCard;
@@ -112,7 +108,6 @@ void GameMechanics::getCardAddress(Card& botCard) {
 }
 
 void GameMechanics::checkGame(Card& cardP1, Card& cardP2, Card& cardP3) {
-	std::cout << "check game" << std::endl;
 
 	bool wylozonycolor = false;
 	if (activeT != 0) {
@@ -714,7 +709,6 @@ void GameMechanics::checkGame(Card& cardP1, Card& cardP2, Card& cardP3) {
 }
 
 void GameMechanics::removeCard() {
-	std::cout << "remove card" << std::endl;
 	previousCardP1Ptr->cardImg.setPosition(sf::Vector2f(-100.0f, -100.0f));
 	previousCardP2Ptr->cardImg.setPosition(sf::Vector2f(-100.0f, -100.0f));
 	previousCardP3Ptr->cardImg.setPosition(sf::Vector2f(-100.0f, -100.0f));

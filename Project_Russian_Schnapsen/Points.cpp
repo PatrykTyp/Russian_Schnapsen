@@ -42,7 +42,6 @@ void Points::init() {
 }
 
 void Points::sumPoints(std::string cardP1, std::string cardP2, std::string cardP3) {
-	std::cout << "sum points" << std::endl;
 	int roundPoints = 0;
 
 	if (cardP1 == "A")

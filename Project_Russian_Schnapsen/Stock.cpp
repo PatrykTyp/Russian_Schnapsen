@@ -3,7 +3,6 @@
 int Stock::intStock = 1;
 
 void Stock::stockToPlayers() {
-	std::cout << "stock to players" << std::endl;
 	const sf::Texture* texture = stock[Move::cardStock].cardImg.getTexture();
 	sf::Vector2u textureSize = texture->getSize();
 	textureSize.x /= 6;
@@ -56,7 +55,6 @@ void Stock::stockToPlayers() {
 }
 
 void Stock::stockToPlayersByBot(Card botWinner[], Card p1[], Card botLooser[]) {
-	std::cout << "stock by bot" << std::endl;
 	sf::Vector2u textureSize = Card::deckTexture.getSize();
 	sf::Vector2u tylKart = Card::cardBack.getSize();
 	textureSize.x /= 6;
@@ -127,7 +125,6 @@ void Stock::stockToPlayersByBot(Card botWinner[], Card p1[], Card botLooser[]) {
 }
 
 void Stock::setStock(Card playerDeck[], bool& isP3, sf::Vector2u textureSize, int x, int y, int id) {
-	std::cout << "set stock" << std::endl;
 	playerDeck[7].figure = stock[id].figure;
 	playerDeck[7].color = stock[id].color;
 	playerDeck[7].value = stock[id].value;

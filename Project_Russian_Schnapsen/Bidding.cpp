@@ -88,7 +88,6 @@ void Bidding::draw(sf::RenderWindow& window) {
 }
 
 void Bidding::down() {
-	std::cout << "down" << std::endl;
 	if (option < 2) {
 		option++;
 		bidShape.setPosition(sf::Vector2f(bid[option].getPosition().x + 50.0f, bid[option].getPosition().y + 10.0f));
@@ -100,7 +99,6 @@ void Bidding::down() {
 };
 
 void Bidding::up() {
-	std::cout << "up" << std::endl;
 	if (option > 0) {
 		option--;
 		bidShape.setPosition(sf::Vector2f(bid[option].getPosition().x + 50.0f, bid[option].getPosition().y + 10.0f));
@@ -112,7 +110,6 @@ void Bidding::up() {
 };
 
 void Bidding::bidding() {
-	std::cout << "bidding" << std::endl;
 	if ((biddingP1 == -1 && biddingP2 == -1) || (biddingP1 == -1 && biddingP3 == -1) || (biddingP2 == -1 && biddingP3 == -1)) {
 		checkBid();
 		return;
@@ -167,7 +164,6 @@ void Bidding::bidding() {
 }
 
 int Bidding::biddingBot(Card deck[], int biddingP) {
-	std::cout << "bidding bot" << std::endl;
 	whoWonBid++;
 	int point = checkDeck(deck);
 	if (startBot == true) {
@@ -251,7 +247,6 @@ void Bidding::checkBid() {
 }
 
 int Bidding::checkDeck(Card deck[]) {
-	std::cout << "check deck" << std::endl;
 	int points = 0;
 	for (int i = 0; i < 8; i++) {
 		if (deck[i].figure == "A")
@@ -268,7 +263,6 @@ bool Bidding::getPass() {
 }
 
 void Bidding::resetAll() {
-	std::cout << "reset all" << std::endl;
 	for (int i = 0; i < 3; i++) {
 		bid[i].setFillColor(sf::Color::Yellow);
 	}
