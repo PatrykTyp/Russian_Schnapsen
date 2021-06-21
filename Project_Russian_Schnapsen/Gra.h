@@ -1,5 +1,7 @@
 #pragma once
+
 #include<SFML/Graphics.hpp>
+#include <iostream>
 
 #include "Menu.h"
 #include "Rules.h"
@@ -8,6 +10,8 @@
 #include "Move.h"
 #include "GameMechanics.h"
 #include "Stock.h"
+#include "Triumph.h"
+#include "Points.h"
 
 
 class Gra : public Stock{
@@ -18,8 +22,18 @@ private:
 
 	sf::Sprite table;
 	sf::Texture tableTexture;
+
+	sf::Sprite win;
+	sf::Texture winTexture;
+
+	sf::Sprite lose;
+	sf::Texture loseTexture;
+
+	sf::Font font;
 	
 	Card choosenByBot;
+
+	sf::Text pressAToContinue;
 
 	void course();
 	void draw();

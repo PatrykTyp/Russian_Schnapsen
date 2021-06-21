@@ -20,7 +20,6 @@ public:
 private:
 	sf::Texture texture;
 	sf::Sprite bground;
-	//sf::Vector2u bgroudSize;
 	sf::View view;
 
 	sf::Font font;

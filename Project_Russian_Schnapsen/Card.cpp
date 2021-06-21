@@ -6,11 +6,9 @@ sf::Texture Card::deckTexture;
 sf::Texture Card::cardBack;
 
 void Card::loadCard(Card tab[]) {
+	std::cout << "load" << std::endl;
 	std::string color[4] = { "pik", "trefl", "karo", "kier" }, figure[6] = { "9","10","J","Q","K","A" };
 	int wart{};
-	/*
-	* Dodanie do talii kart, wszystkie potrzebne do gry 24 karty (wszystkie 4 kolory + karty od 9 do Asa)
-	*/
 	for (int i = 0; i < 4; i++) {
 		for (int j = 0; j < 6; j++) {
 			tab[wart].figure = figure[j];
@@ -24,10 +22,8 @@ void Card::loadCard(Card tab[]) {
 	}
 }
 
-/*
-* Przypisanie grafiki do poszczególnych kart
-*/
 void Card::assignImg(Card tab[]) {
+	std::cout << "assing img" << std::endl;
 	sf::Vector2u taliaSize = deckTexture.getSize();
 	taliaSize.x /= 6;
 	taliaSize.y /= 4;
@@ -49,15 +45,9 @@ void Card::assignImg(Card tab[]) {
 	}
 }
 
-/*
-* Przetasowanie kart, by by³y one nieuporz¹dkowane
-*/
 void Card::reshuffleCard(Card tab[]) {
+	std::cout << "reshuffle" << std::endl;
 	Card tmp;
-	/*
-	* System losowania polega na wylosowaniu dwóch losowych indeksów od 0 do 23, które zostan¹ zamienione miejscami
-	* Powtarzamy to 1000 razy, w celu dok³adnego wymieszania kart
-	*/
 	std::random_device device;
 	std::mt19937 generator(device());
 	std::uniform_int_distribution<int> random(0, 23);
@@ -80,11 +70,8 @@ void Card::reshuffleCard(Card tab[]) {
 	}
 }
 
-/*
-* Rozdanie potasowanych kart,
-* Pokolei zaczynaj¹c od gracza1, rozdajemy 21 kart, 3 pozosta³e l¹duj¹ w musiku, który póŸniej bêdzie rozdany
-*/
 void Card::deal(Card gracz1[], Card gracz2[], Card gracz3[], Card talia[], Card musik[]) {
+	std::cout << "deal" << std::endl;
 	int licznik{}, iloscKartWRece{};
 
 	for (int i = 0; i < 21; i++) {

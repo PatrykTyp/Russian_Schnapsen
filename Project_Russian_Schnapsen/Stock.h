@@ -5,18 +5,14 @@
 #include "Players.h"
 #include "Move.h"
 #include "Card.h"
+#include "Triumph.h"
 #include "SFML/Graphics.hpp"
 
-class Stock : public Players, public Move{
-private:
-
-	int intStock = 1;
-
-
+class Stock : public Players{
 public:
-
-	void stockToPlayers();
-	void stockToPlayersByBot(Card[], Card[], Card[]);
-	void setStock(Card[], bool, sf::Vector2u, int, int, int);
+	static int intStock;
+	static void stockToPlayers();
+	static void stockToPlayersByBot(Card[], Card[], Card[]);
+	static void setStock(Card[], bool&, sf::Vector2u, int, int, int);
 };
 

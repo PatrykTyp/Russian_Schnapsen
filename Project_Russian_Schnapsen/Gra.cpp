@@ -10,18 +10,31 @@ Gra::Gra() :
 	view.setCenter(sf::Vector2f(600.0f, 400.0f));
 
 	tableTexture.loadFromFile("ex/image/plansza.png");
+	winTexture.loadFromFile("ex/image/win.png");
+	loseTexture.loadFromFile("ex/image/lose.png");
 	
 	Card::cardUsed.loadFromFile("ex/image/uzyta.png");
 	Card::cardBack.loadFromFile("ex/image/tyl.png");
 	Card::deckTexture.loadFromFile("ex/image/talia.png");
+	font.loadFromFile("ex/font/sansation.ttf");
 
 	table.setTexture(tableTexture);
+	win.setTexture(winTexture);
+	lose.setTexture(loseTexture);
 
 	Card::loadCard(Players::deck);
 	Card::assignImg(Players::deck);
 	Card::setTextures();
 
+	pressAToContinue.setFont(font);
+	pressAToContinue.setFillColor(sf::Color::Green);
+	pressAToContinue.setCharacterSize(36);
+	pressAToContinue.setString("Wcisnij A by kontynuowac!");
+	pressAToContinue.setPosition(sf::Vector2f(300.0f, 550.0f));
+
+
 	Move::init();
+	Points::init();
 }
 
 
@@ -40,9 +53,6 @@ void Gra::course() {
 			window.close();
 			break;
 		case sf::Event::KeyReleased:
-			/*
-			* Okno menu
-			*/
 			if (windowFocus == 0) {
 				switch (ev.key.code) {
 				case sf::Keyboard::Down:
@@ -53,44 +63,30 @@ void Gra::course() {
 					break;
 				case sf::Keyboard::Return:
 					switch (menu.getOption()) {
-						/*
-						* Przejœcie do gry w³aœciwej, rozdanie kart i zmiena t³a.
-						*/
 					case 0:
 						windowFocus = 1;
 						Card::reshuffleCard(Players::deck);
 						Card::deal(Players::player1, Players::player2, Players::player3, Players::deck, Players::stock);
 						cardPosition();
-						//cardTurn();
+						cardTurn();
 						break;
-						/*
-						* Przejscie do zasad gry
-						*/
 					case 1:
 						windowFocus = 2;
 						break;
-						/*
-						* Wyjscie z gry
-						*/
 					case 2:
 						window.close();
 						break;
 					}
 				}
 			}
-			/*
-			* Okno gry
-			*/
 			if (windowFocus == 1) {
 				switch (ev.key.code) {
-					/*
-					* Powrót do menu
-					*/
 				case sf::Keyboard::Escape:
-					//reset();
+					reset();
 					windowFocus = 0;
 					break;
 				case sf::Keyboard::A:
+					std::cout << "is Bidding: " << Bidding::isBidding << "        throwCard: " << GameMechanics::throwCard << std::endl;
 					if (!Bidding::isBidding) {
 						if (Move::getStock()) {
 							stockToPlayers();
@@ -108,8 +104,9 @@ void Gra::course() {
 									Move::choosenCard(player1[Move::getSelectedCard()]);
 									GameMechanics::sendValues(player1[Move::getSelectedCard()], choosenByBot);
 									Move::cardUsed[Move::getSelectedCard()] = Move::getSelectedCard();
-
-									Move::right();
+									if (Bidding::reset != 7) {
+										Move::right();
+									}
 
 									GameMechanics::throwCard = false;
 								}
@@ -122,14 +119,36 @@ void Gra::course() {
 									GameMechanics::bidder = 1;
 								}
 							}
+							else {
+								GameMechanics::removeCard();
+								GameMechanics::throwCard = true;
+
+								Points::winP1 = 0;
+								Points::winP2 = 0;
+								Points::winP3 = 0;
+
+								Bidding::reset++;
+								std::cout << Bidding::reset << std::endl;
+								std::cout << Bidding::isReset << std::endl;
+								reset();
+							}
 						}
 					}
+					if (Bidding::end) {
+						windowFocus = 4;
+					}
+					break;
+				case sf::Keyboard::R:
+					std::cout << "Wykonuje sie RRRRRRRRawr" << std::endl;
+					Bidding::isReset = true;
+					reset();
+					break;
 				case sf::Keyboard::Left:
-					if (Move::isReset != 7 && !Bidding::isBidding )
+					if (Bidding::reset != 7 && !Bidding::isBidding )
 						Move::left();
 					break;
 				case sf::Keyboard::Right:
-					if (Move::isReset != 7 && !Bidding::isBidding)
+					if (Bidding::reset != 7 && !Bidding::isBidding)
 						Move::right();
 					break;
 				case sf::Keyboard::L:
@@ -159,19 +178,16 @@ void Gra::course() {
 				switch (ev.key.code) {
 				case sf::Keyboard::Escape:
 					windowFocus = 0;
-					//reset();
+					reset();
 					break;
 				case sf::Keyboard::Return:
 					windowFocus = 0;
-					//reset();
+					reset();
 					break;
 				default:
 					break;
 				}
 			}
-			/*
-			* Ekran zasad
-			*/
 			if (windowFocus == 2) {
 				switch (ev.key.code) {
 				case sf::Keyboard::Escape:
@@ -183,9 +199,6 @@ void Gra::course() {
 				}
 			}
 			break;
-			/*
-			* W celu przesuniêcia ekranu nale¿y u¿yæ Scrolla na myszy
-			*/
 		case sf::Event::MouseWheelScrolled:
 			if (windowFocus == 2) {
 				if (ev.mouseWheelScroll.delta > 0) {
@@ -209,6 +222,7 @@ void Gra::draw() {
 		menu.draw(window);
 	}
 	else if (windowFocus == 1) {
+
 		window.setView(view);
 		window.draw(table);
 		if (!Bidding::isBidding) {
@@ -226,15 +240,31 @@ void Gra::draw() {
 			window.draw(Players::player2[i].cardImg);
 			window.draw(Players::player3[i].cardImg);
 		}
+	
+		if (!GameMechanics::throwCard) {
+			window.draw(pressAToContinue);
+		}
+		window.draw(Points::pointsTextP1);
+		window.draw(Points::pointsTextP2);
+		window.draw(Points::pointsTextP3);
 		
 	}
 	else if (windowFocus == 2) {
 		rules.draw(window);
 	}
+	else if (windowFocus == 4) {
+		if (Bidding::iWin) {
+			window.draw(win);
+		}
+		else {
+			window.draw(lose);
+		}
+	}
 	window.display();
 }
 
 void Gra::cardPosition() {
+	std::cout << "Card position" << std::endl;
 	for (int i = 0; i < 7; i++) {
 		Players::player1[i].cardImg.setPosition(sf::Vector2f(72.0f + (97.5f * i), 79.0f));
 		Players::player3[i].cardImg.setPosition(sf::Vector2f(1115.0f, 59.0f + (97.0f * i)));
@@ -247,6 +277,7 @@ void Gra::cardPosition() {
 }
 
 void Gra::cardTurn() {
+	std::cout << "Card turn" << std::endl;
 	sf::Vector2u tylSize = Card::cardBack.getSize();
 	tylSize.x /= 6;
 	tylSize.y /= 4;
@@ -266,6 +297,7 @@ void Gra::cardTurn() {
 }
 
 void Gra::oneCardBack(Card& card) {
+	std::cout << "Card 1 turn" << std::endl;
 	sf::Vector2u size = Card::cardBack.getSize();
 	size.x /= 6;
 	size.y /= 4;
@@ -277,6 +309,7 @@ void Gra::oneCardBack(Card& card) {
 }
 
 void Gra::oneCardFront(Card& card) {
+	std::cout << "Card return" << std::endl;
 	sf::Vector2u size = Card::deckTexture.getSize();
 	size.x /= 6;
 	size.y /= 4;
@@ -288,63 +321,61 @@ void Gra::oneCardFront(Card& card) {
 }
 
 void Gra::reset() {
-	/*if (doResetuZostalo == 8 || czyReset == true) {
-		tmp = 0;
-		przyznanyMusik = 0;
-		licytacjaJa = 0;
-		licytacjaBot2 = 0;
-		licytacjaBot3 = 0;
-		czyMusik = true;
-		czyLicytacja = true;
-		musikCzyNie = true;
-		wystawienie = true;
-		poprzednia1 = nullptr;
-		poprzednia2 = nullptr;
-		poprzednia3 = nullptr;
-		czyJaProwadze.first = true;
-		czyJaProwadze.second = true;
-		gracz1[7].card.setPosition(sf::Vector2f(-100.0f, -100.0f));
-		gracz2[7].card.setPosition(sf::Vector2f(-100.0f, -100.0f));
-		gracz3[7].card.setPosition(sf::Vector2f(-100.0f, -100.0f));
-		wybierzKarte.setPosition(sf::Vector2f(490.0f, 470.0f));
-		doResetuZostalo = 0;
-		prowadziGracz = 1;
-		if (czyReset == true) {
-			cout << "RESET JEST KURNA TRU" << endl;
-			pkt1 = 0;
-			pkt2 = 0;
-			pkt3 = 0;
-			punkty = 0;
-			pkt1tmp = 0;
-			pkt2tmp = 0;
-			pkt3tmp = 0;
-			punkty1.setString(to_string(pkt1));
-			punkty2.setString(to_string(pkt2));
-			punkty3.setString(to_string(pkt3));
+	std::cout << "RESET" << std::endl;
+	if (Bidding::reset == 8 || Bidding::isReset == true) {
+		Stock::intStock = 1;
+		Bidding::biddingP1 = 0;
+		Bidding::biddingP2 = 0;
+		Bidding::biddingP3 = 0;
+		Move::isStock = true;
+		Bidding::isBidding = true;
+		GameMechanics::throwCard = true;
+		GameMechanics::previousCardP1Ptr = nullptr;
+		GameMechanics::previousCardP2Ptr = nullptr;
+		GameMechanics::previousCardP3Ptr = nullptr;
+		GameMechanics::whoFirst.first = true;
+		GameMechanics::whoFirst.second = true;
+		player1[7].cardImg.setPosition(sf::Vector2f(-100.0f, -100.0f));
+		player2[7].cardImg.setPosition(sf::Vector2f(-100.0f, -100.0f));
+		player3[7].cardImg.setPosition(sf::Vector2f(-100.0f, -100.0f));
+		Move::chooseCard.setPosition(sf::Vector2f(490.0f, 470.0f));
+		Bidding::reset = 0;
+		GameMechanics::bidder = 1;
+		if (Bidding::isReset == true) {
+			Points::pointsP1 = 0;
+			Points::pointsP2 = 0;
+			Points::pointsP3 = 0;
+			Points::pointsP1tmp = 0;
+			Points::pointsP2tmp = 0;
+			Points::pointsP3tmp = 0;
+			Points::pointsTextP1.setString(std::to_string(Points::pointsP1));
+			Points::pointsTextP2.setString(std::to_string(Points::pointsP2));
+			Points::pointsTextP3.setString(std::to_string(Points::pointsP3));
 		}
 		for (int i = 0; i < 8; i++) {
-			kartyUzyte[i] = -1;
-			gracz1[i].uzyta = false;
-			gracz2[i].uzyta = false;
-			gracz3[i].uzyta = false;
+			Move::cardUsed[i] = -1;
+			player1[i].use = false;
+			player2[i].use = false;
+			player3[i].use = false;
 		}
 		for (int i = 0; i < 3; i++)
-			kartyUzyteMusik[i] = -1;
+			Move::cardStockUsed[i] = -1;
 		for (int i = 0; i < 4; i++) {
-			meldunekKrole[i].first.first = false;
-			meldunekKrole[i].first.second = 0;
-			meldunekKrolowe[i].first.first = false;
-			meldunekKrolowe[i].first.second = 0;
-			jakiMeldunek1[i] = false;
-			jakiMeldunek2[i] = false;
-			jakiMeldunek3[i] = false;
+			Triumph::tKing[i].first.first = false;
+			Triumph::tKing[i].first.second = 0;
+			Triumph::tQueen[i].first.first = false;
+			Triumph::tQueen[i].first.second = 0;
 		}
-		licytacja.reset();
-		przetasujKarty(talia);
-		rozdanie(gracz1, gracz2, gracz3, talia, musik);
-		pozycjaKart();
-		tylKart();
-		wygrywaLicytacje.setString("");
-		czyReset = false;
-	}*/
+		Bidding::resetAll();
+		Bidding::circle1.setFillColor(sf::Color::Green);
+		Bidding::circle2.setFillColor(sf::Color::Green);
+		Bidding::circle3.setFillColor(sf::Color::Green);
+
+		Card::reshuffleCard(deck);
+		Card::deal(player1, player2, player3, deck, stock);
+		cardPosition();
+		cardTurn();
+		Bidding::bidWin.setString("");
+		Bidding::isReset = false;
+	}
 }

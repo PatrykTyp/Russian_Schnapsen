@@ -8,6 +8,7 @@
 #include "Players.h"
 #include "GameMechanics.h"
 #include "Move.h"
+#include "Stock.h"
 
 class Bidding{
 private:
@@ -24,17 +25,23 @@ private:
 
 public:
 	static sf::CircleShape circle1, circle2, circle3, circle4;
+	static sf::Text bidWin;
 
 	static int biddingP1, biddingP2, biddingP3;
 	static bool isBidding;
-	static int whoWonBid; //powygranej rundzie first +1 *DODAÆ*
+	static int whoWonBid;
 	static int pointsNeeded;
 	static std::pair<int, bool>first;
 
 	static int whoWonMatch;
+
 	static int reset;
+	static bool isReset;
+	static bool iWin;
+	static bool end;
 
 	static void init();
+	static sf::Font getFont();
 
 	static void draw(sf::RenderWindow& window);
 	static void down();
@@ -46,6 +53,7 @@ public:
 	static int checkDeck(Card []);
 
 	static bool getPass();
+	static void resetAll();
 
 };
 

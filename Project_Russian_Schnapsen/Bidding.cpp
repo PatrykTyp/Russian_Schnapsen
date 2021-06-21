@@ -2,6 +2,7 @@
 
 sf::CircleShape Bidding::circle1, Bidding::circle2, Bidding::circle3, Bidding::circle4;
 sf::Text Bidding::bid[3], Bidding::win, Bidding::currentBid;
+sf::Text Bidding::bidWin;
 sf::Font Bidding::font;
 sf::RectangleShape Bidding::bidShape;
 int Bidding::biddingP1, Bidding::biddingP2, Bidding::biddingP3;
@@ -18,15 +19,16 @@ int Bidding::pointsNeeded = 0;
 std::pair<int, bool> Bidding::first;
 
 int Bidding::whoWonMatch = 0;
+
 int Bidding::reset = 0;
+bool Bidding::isReset = false;
+bool Bidding::iWin = false;
+bool Bidding::end = false;
 
 void Bidding::init() {
 	font.loadFromFile("ex/font/sansation.ttf");
 	minBidding = 100;
 	whoWonBid = 1;
-	/*
-	* Nadawanie w³aœciwoœci wielkoœci licytacji
-	*/
 	for (int i = 0; i < 3; i++) {
 		bid[i].setFont(font);
 		bid[i].setFillColor(sf::Color::Yellow);
@@ -42,6 +44,11 @@ void Bidding::init() {
 	currentBid.setPosition(sf::Vector2f(430.0f, 250.0f));
 	currentBid.setFillColor(sf::Color::Blue);
 	currentBid.setString("Aktualna licytacja: " + std::to_string(minBidding));
+
+	bidWin.setFont(font);
+	bidWin.setCharacterSize(32);
+	bidWin.setFillColor(sf::Color::Green);
+	bidWin.setPosition(sf::Vector2f(450.0f, 270.0f));
 
 
 	bidShape.setSize(sf::Vector2f(150.0f, 50.0f));
@@ -81,6 +88,7 @@ void Bidding::draw(sf::RenderWindow& window) {
 }
 
 void Bidding::down() {
+	std::cout << "down" << std::endl;
 	if (option < 2) {
 		option++;
 		bidShape.setPosition(sf::Vector2f(bid[option].getPosition().x + 50.0f, bid[option].getPosition().y + 10.0f));
@@ -92,6 +100,7 @@ void Bidding::down() {
 };
 
 void Bidding::up() {
+	std::cout << "up" << std::endl;
 	if (option > 0) {
 		option--;
 		bidShape.setPosition(sf::Vector2f(bid[option].getPosition().x + 50.0f, bid[option].getPosition().y + 10.0f));
@@ -103,6 +112,7 @@ void Bidding::up() {
 };
 
 void Bidding::bidding() {
+	std::cout << "bidding" << std::endl;
 	if ((biddingP1 == -1 && biddingP2 == -1) || (biddingP1 == -1 && biddingP3 == -1) || (biddingP2 == -1 && biddingP3 == -1)) {
 		checkBid();
 		return;
@@ -157,16 +167,9 @@ void Bidding::bidding() {
 }
 
 int Bidding::biddingBot(Card deck[], int biddingP) {
+	std::cout << "bidding bot" << std::endl;
 	whoWonBid++;
 	int point = checkDeck(deck);
-	/*
-	* Wielkoœæ licytacji jest okreœlana za pomoc¹ iloœci asów (karta daj¹ca najwiêcej punktów) w talii gracza.
-	*/
-
-	/*
-	* Sprawdzane jest czy minimalna wartoœæ licytacji jest mniejsza ni¿ ta, za któr¹ gracz mo¿e zalicytowaæ
-	* Je¿eli tak to licytuje, tym samym podnosz¹c minimum jakie musi zostaæ wylicytowane, eliminuj¹c powtarzanie siê wartoœci w partii
-	*/
 	if (startBot == true) {
 		minBidding = 100;
 		startBot = false;
@@ -185,9 +188,6 @@ int Bidding::biddingBot(Card deck[], int biddingP) {
 	else {
 		return -1;
 	}
-	/*
-	* Zmiana wartoœci pierwszej licytacji, jezeli gracz sterowany przez osobê by³ pierwszy
-	*/
 }
 
 void Bidding::checkBid() {
@@ -202,51 +202,56 @@ void Bidding::checkBid() {
 	if (biddingP2 == -1 && biddingP3 == -1) {
 		GameMechanics::whoFirst.first = true;
 		GameMechanics::whoFirst.second = true;
+		GameMechanics::bidder = 1;
 		isBidding = false;
 		whoWonBid = 1;
 		pointsNeeded = biddingP1;
+		Move::isStock = true;
+
 	}
 	else if (biddingP1 == -1 && biddingP3 == -1) {
 		GameMechanics::whoFirst.first = false;
 		GameMechanics::whoFirst.second = true;
+		GameMechanics::bidder = 2;
 		isBidding = false;
 		whoWonBid = 2;
 		pointsNeeded = biddingP2;
-		//wybierzMusikBot(gracz2, gracz1, gracz3);
+		Stock::stockToPlayersByBot(Players::player2, Players::player1, Players::player3);
 	}
 	else if (biddingP1 == -1 && biddingP2 == -1) {
 		GameMechanics::whoFirst.first = true;
 		GameMechanics::whoFirst.second = false;
+		GameMechanics::bidder = 3;
 		isBidding = false;
 		whoWonBid = 3;
 		pointsNeeded = biddingP3;
 
-		//wybierzMusikBot(gracz3, gracz1, gracz2);
+		Stock::stockToPlayersByBot(Players::player3, Players::player1, Players::player2);
 	}
 
 	if (!isBidding) {
-		Move::setStock(true);
 		Move::turn = whoWonBid;
 	}
 	
 	if (biddingP1 > biddingP2 && biddingP1 > biddingP3) {
-		//wygrywaLicytacje.setString("Wygrywa G1 : " + to_string(licytacjaJa));
+		bidWin.setString("Wygrywa G1 : " + std::to_string(biddingP1));
 		GameMechanics::whoFirst.first = true;
 		GameMechanics::whoFirst.second = true;
 	}
 	else if (biddingP2 > biddingP1 && biddingP2 > biddingP3) {
-		//wygrywaLicytacje.setString("Wygrywa G2 : " + to_string(licytacjaBot2));
+		bidWin.setString("Wygrywa G2 : " + std::to_string(biddingP2));
 		GameMechanics::whoFirst.first = false;
 		GameMechanics::whoFirst.second = true;
 	}
 	else if (biddingP3 > biddingP1 && biddingP3 > biddingP2) {
-		//wygrywaLicytacje.setString("Wygrywa G3 : " + to_string(licytacjaBot3));
+		bidWin.setString("Wygrywa G3 : " + std::to_string(biddingP3));
 		GameMechanics::whoFirst.first = true;
 		GameMechanics::whoFirst.second = false;
 	}
 }
 
 int Bidding::checkDeck(Card deck[]) {
+	std::cout << "check deck" << std::endl;
 	int points = 0;
 	for (int i = 0; i < 8; i++) {
 		if (deck[i].figure == "A")
@@ -260,4 +265,20 @@ bool Bidding::getPass() {
 		return false;
 	}
 	return true;
+}
+
+void Bidding::resetAll() {
+	std::cout << "reset all" << std::endl;
+	for (int i = 0; i < 3; i++) {
+		bid[i].setFillColor(sf::Color::Yellow);
+	}
+	minBidding = 100;
+	canIPass = false;
+	startBot = false;
+
+	currentBid.setString(std::to_string(minBidding));
+}
+
+sf::Font Bidding::getFont() {
+	return font;
 }

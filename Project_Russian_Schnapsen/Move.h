@@ -1,20 +1,18 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
+#include <iostream>
 
 #include "Card.h"
 #include "Players.h"
 #include "Bidding.h"
 
-class Move{
-private:
-	
-
-	static bool isStock;
-	static int selectedCard;
+class Move{	
 public:
 	Move();
 
+	static int selectedCard;
+	static bool isStock;
 	static int cardUsed[];
 	static int cardStockUsed[];
 	static int isReset;
@@ -30,7 +28,6 @@ public:
 	static void init();
 
 	static bool getStock();
-	static void setStock(bool);
 	static int getSelectedCard();
 
 	static void choosenCard(Card&);

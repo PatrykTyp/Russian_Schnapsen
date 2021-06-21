@@ -3,6 +3,7 @@
 #include <string>
 #include <random>
 #include <SFML/Graphics.hpp>
+#include <iostream>
 
 
 class Card{
@@ -22,8 +23,8 @@ public:
 
 	static sf::Texture* ptrTexture;
 
-	static void loadCard(Card[]);    // Wczytywanie kart do talii
-	static void reshuffleCard(Card[]);  // Tasowanie kart w talii
+	static void loadCard(Card[]);    
+	static void reshuffleCard(Card[]);  
 	static void deal(Card[], Card[], Card[], Card[], Card[]);
 	static void assignImg(Card[]);
 

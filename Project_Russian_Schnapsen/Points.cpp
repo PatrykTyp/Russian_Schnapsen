@@ -1,5 +1,7 @@
 #include "Points.h"
 
+sf::Font Points::font;
+
 sf::Text Points::pointsTextP1;
 int Points::pointsP1 = 0;
 int Points::pointsP1tmp = 0;
@@ -16,8 +18,31 @@ bool Points::winP1 = 0;
 bool Points::winP2 = 0;
 bool Points::winP3 = 0;
 
+void Points::init() {
+
+	font.loadFromFile("ex/font/sansation.ttf");
+
+	pointsTextP1.setFont(font);
+	pointsTextP1.setFillColor(sf::Color::Red);
+	pointsTextP1.setCharacterSize(32);
+	pointsTextP1.setString("0");
+	pointsTextP1.setPosition(sf::Vector2f(100.0f, 160.0f));
+
+	pointsTextP2.setFont(font);
+	pointsTextP2.setFillColor(sf::Color::Red);
+	pointsTextP2.setCharacterSize(32);
+	pointsTextP2.setString("0");
+	pointsTextP2.setPosition(sf::Vector2f(100.0f, 600.0f));
+
+	pointsTextP3.setFont(font);
+	pointsTextP3.setFillColor(sf::Color::Red);
+	pointsTextP3.setCharacterSize(32);
+	pointsTextP3.setString("0");
+	pointsTextP3.setPosition(sf::Vector2f(995.0f, 75.0f));
+}
 
 void Points::sumPoints(std::string cardP1, std::string cardP2, std::string cardP3) {
+	std::cout << "sum points" << std::endl;
 	int roundPoints = 0;
 
 	if (cardP1 == "A")
@@ -63,14 +88,7 @@ void Points::sumPoints(std::string cardP1, std::string cardP2, std::string cardP
 		pointsP3tmp += roundPoints;
 	}
 	roundPoints = 0;
-	/*
-	* Je¿eli gra runda siê koñczy, podliczane s¹ roundPoints zdobyte podczas tej rundy
-	*/
 	if (Bidding::reset == 7) {
-		/*
-		* Gracz, który prowadzi³ licytacjê, je¿eli nie osi¹gn¹³ tylu punktów ile zalicytowa³,
-		* to tyle punktów zostaje odjêtych, w przypadku reszty graczy roundPoints sumuj¹ siê z ju¿ zdobytymi
-		*/
 		if (Bidding::whoWonBid == 1) {
 			if (Bidding::pointsNeeded < pointsP1tmp) {
 				pointsP1 += pointsP1tmp;
@@ -104,9 +122,6 @@ void Points::sumPoints(std::string cardP1, std::string cardP2, std::string cardP
 			pointsP2 += pointsP2tmp;
 			Bidding::whoWonMatch = 3;
 		}
-		/*
-		* Zerowanie zmiennych odpowiadaj¹cych za podlicznie punktów podczas rundy
-		*/
 		pointsP1tmp = 0;
 		pointsP2tmp = 0;
 		pointsP3tmp = 0;
@@ -114,15 +129,17 @@ void Points::sumPoints(std::string cardP1, std::string cardP2, std::string cardP
 		Bidding::circle2.setFillColor(sf::Color::Green);
 		Bidding::circle3.setFillColor(sf::Color::Green);
 		if (pointsP1 >= 200) {
-			//koniec = true;
-			//czyWygralem = true;
-			//czyReset = true;
-			//przejscieDo = 4;
+			Bidding::end = true;
+			Bidding::iWin = true;
 		}
 		if (pointsP2 >= 200 || pointsP3 >= 200) {
-			//koniec = true;
-			//czyReset = true;
-			//przejscieDo = 4;
+			Bidding::end = true;
 		}
 	}
+}
+
+void Points::draw(sf::RenderWindow &window) {
+	window.draw(pointsTextP1);
+	window.draw(pointsTextP2);
+	window.draw(pointsTextP3);
 }

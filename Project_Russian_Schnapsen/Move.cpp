@@ -27,26 +27,11 @@ void Move::init() {
 }
 
 void Move::left() {
-	/*
-	* ustawienie znacznika kart, na pierwsz¹ w rêce, gdy partia dobiegnie koñca
-	*/
+	std::cout << "left" << std::endl;
 	if (isReset == 7)
 		chooseCard.setPosition(sf::Vector2f(Players::player1[0].cardImg.getPosition().x, Players::player1[0].cardImg.getPosition().y + 70.0f));
-	/*
-	* Sprawdzenie czy aktualnie nie rozdajemy musiku
-	* W zale¿noœci od tego albo poruszamy siê po kartach musiku rozdaj¹c je graczom,
-	* albo poruszamy siê po w³asnych kartach
-	*/
 	if (!isStock) {
 		cardStock = 0;
-		/*
-		* Sprawdzenie, czy nastêpna karta nie zosta³a ju¿ u¿yta
-		* Je¿eli karta s¹siednia, na któr¹ chcemy prze³¹czyæ znacznik jest u¿yta,
-		* to nastêpuje przeskok do nastêpnej, wolnej karty, której mo¿emy u¿yæ
-		*
-		* Je¿eli karta, na której aktualnie jest znacznik znajduje siê skrajnie po lewej stronie,
-		* to znacznik zostanie ustawiony na kartê skrajnie po prawej stronie
-		*/
 		if (selectedCard >= 0) {
 			do {
 				if (selectedCard == 0)
@@ -57,9 +42,6 @@ void Move::left() {
 			chooseCard.setPosition(sf::Vector2f(Players::player1[selectedCard].cardImg.getPosition().x, Players::player1[selectedCard].cardImg.getPosition().y + 70.0f));
 		}
 	}
-	/*
-	* Analogia dla musiku
-	*/
 	else {
 		selectedCard = 0;
 		if (cardStock >= 0) {
@@ -75,21 +57,11 @@ void Move::left() {
 }
 
 void Move::right() {
-	/*
-	* ustawienie znacznika kart, na pierwsz¹ w rêce, gdy partia dobiegnie koñca
-	*/
+	std::cout << "right" << std::endl;
 	if (isReset == 7)
 		chooseCard.setPosition(sf::Vector2f(Players::player1[0].cardImg.getPosition().x, Players::player1[0].cardImg.getPosition().y + 70.0f));
 	if (!isStock) {
 		cardStock = 0;
-		/*
-		* Sprawdzenie, czy nastêpna karta nie zosta³a ju¿ u¿yta
-		* Je¿eli karta s¹siednia, na któr¹ chcemy prze³¹czyæ znacznik jest u¿yta,
-		* to nastêpuje przeskok do nastêpnej, wolnej karty, której mo¿emy u¿yæ
-		*
-		* Je¿eli karta, na której aktualnie jest znacznik znajduje siê skrajnie po prawej stronie,
-		* to znacznik zostanie ustawiony na kartê skrajnie po lewej stronie
-		*/
 		if (selectedCard <= 7) {
 			do {
 				if (selectedCard == 7)
@@ -100,9 +72,6 @@ void Move::right() {
 			chooseCard.setPosition(sf::Vector2f(Players::player1[selectedCard].cardImg.getPosition().x, Players::player1[selectedCard].cardImg.getPosition().y + 70.0f));
 		}
 	}
-	/*
-	* Analogia dla musiku
-	*/
 	else {
 		selectedCard = 0;
 		if (cardStock <= 2) {
@@ -117,10 +86,6 @@ void Move::right() {
 	}
 }
 
-void Move::setStock(bool stock) {
-	isStock = stock;
-}
-
 bool Move::getStock() {
 	return isStock;
 }
@@ -130,11 +95,13 @@ int Move::getSelectedCard() {
 }
 
 void Move::choosenCard(Card& card) {
+	std::cout << "choosenCard" << std::endl;
 	card.cardImg.setPosition(sf::Vector2f(490.0f, 400.0f));
 	chooseCard.setPosition(sf::Vector2f(card.cardImg.getPosition().x, card.cardImg.getPosition().y + 70.0f));
 }
 
 void Move::turnBack() {
+	std::cout << "move turn back" << std::endl;
 	sf::Vector2u backSize = Card::cardBack.getSize();
 	backSize.x /= 6;
 	backSize.y /= 4;
@@ -155,6 +122,7 @@ void Move::turnBack() {
 }
 
 void Move::turnBack(Card& card) {
+	std::cout << "move turn back 1" << std::endl;
 	sf::Vector2u backSize = Card::cardBack.getSize();
 	backSize.x /= 6;
 	backSize.y /= 4;
@@ -166,6 +134,7 @@ void Move::turnBack(Card& card) {
 }
 
 void Move::turnFront(Card& card) {
+	std::cout << "move turn fornt" << std::endl;
 	sf::Vector2u frontSize = Card::deckTexture.getSize();
 	frontSize.x /= 6;
 	frontSize.y /= 4;
@@ -175,4 +144,5 @@ void Move::turnFront(Card& card) {
 	card.cardImg.setTexture(Card::deckTexture);
 	card.cardImg.setTextureRect(sf::IntRect(frontSize.x * x, frontSize.y * y, frontSize.x, frontSize.y));
 }
+
 

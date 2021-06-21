@@ -15,10 +15,11 @@ Card* GameMechanics::previousCardP3Ptr = nullptr;
 
 
 void GameMechanics::sendValues(Card& playerCard, Card& botCard) {
+	std::cout << "send values" << std::endl;
 	Card cardP2, cardP3;
 
 	if (whoFirst.first == true && whoFirst.second == true) {
-		cardP2 = sendValuesBot(playerCard, Players::player1, a);
+		cardP2 = sendValuesBot(playerCard, Players::player2, a);
 		cardP3 = sendValuesBot(playerCard, Players::player3, b);
 
 		checkGame(playerCard, cardP2, cardP3);
@@ -34,9 +35,6 @@ void GameMechanics::sendValues(Card& playerCard, Card& botCard) {
 		checkGame(playerCard, cardP2, botCard);
 	}
 	previousCardP1Ptr = &playerCard;
-	/*
-	* Ustawienie zaktualizowanych punktów
-	*/
 	Points::pointsTextP1.setString(std::to_string(Points::pointsP1));
 	Points::pointsTextP2.setString(std::to_string(Points::pointsP2));
 	Points::pointsTextP3.setString(std::to_string(Points::pointsP3));
@@ -44,6 +42,7 @@ void GameMechanics::sendValues(Card& playerCard, Card& botCard) {
 }
 
 Card GameMechanics::sendValuesBot(Card botCard[], float position) {
+	std::cout << "send values bot 1" << std::endl;
 	int indexOfCard{}, value{};
 	
 	if (value == 0 && indexOfCard == 0) {
@@ -61,15 +60,13 @@ Card GameMechanics::sendValuesBot(Card botCard[], float position) {
 	}
 	botCard[indexOfCard].cardImg.setPosition(sf::Vector2f(position, 400.0f));
 	Move::turnFront(botCard[indexOfCard]);
-	/*
-	* Pobranie adresu karty, by po partyii mog³a zostaæ przesuniêta poza ekran
-	*/
 	getCardAddress(botCard[indexOfCard]);
 
 	return botCard[indexOfCard];
 }
 
 Card GameMechanics::sendValuesBot(Card& playerCard, Card botCard[], float position) {
+	std::cout << "send values bot 2" << std::endl;
 	int indexOfCard{}, value{};
 
 	for (int i = 0; i < 8; i++) {
@@ -96,14 +93,12 @@ Card GameMechanics::sendValuesBot(Card& playerCard, Card botCard[], float positi
 	}
 	Move::turnFront(botCard[indexOfCard]);
 	botCard[indexOfCard].cardImg.setPosition(sf::Vector2f(position, 400.0f));
-	/*
-	* Pobranie adresu karty
-	*/
 	getCardAddress(botCard[indexOfCard]);
 	return botCard[indexOfCard];
 }
 
 void GameMechanics::getCardAddress(Card& botCard) {
+	std::cout << "get card address" << std::endl;
 	
 	if (who == 0) {
 		previousCardP2Ptr = &botCard;
@@ -117,22 +112,15 @@ void GameMechanics::getCardAddress(Card& botCard) {
 }
 
 void GameMechanics::checkGame(Card& cardP1, Card& cardP2, Card& cardP3) {
+	std::cout << "check game" << std::endl;
+
 	bool wylozonycolor = false;
-	/*
-	* Podstawowy warunek, czy jest aktywny jakiœ meldunek
-	* aktywnyMeldunek == 0 oznacza jego brak
-	*/
 	if (activeT != 0) {
 		/*
-		* Sprawdzenie który meldunek jest aktualnie aktywny podczas gry
 		* 1 - pik
 		* 2 - trefl
 		* 3 - karo
 		* 4 - kier
-		*
-		* Po sprzwdzeniu sprawdzane s¹ czy karty, graczy posiadaj¹ ten color, jaki jest aktywny meldunek
-		* Wybranie kart z tego w³aœnie coloru o najwiêkszej wartoœci
-		* Gracz posiadaj¹cy tak¹ kartê, wygrywa 1 partiê, staje siê prowadz¹cym w nastêpnej i od niego nastêpuje licytacja
 		*/
 		if (activeT == 1) {
 			if (cardP1.color == "pik" && cardP2.color == "pik" && cardP3.color == "pik") {
@@ -498,15 +486,6 @@ void GameMechanics::checkGame(Card& cardP1, Card& cardP2, Card& cardP3) {
 			}
 		}
 	}
-	/*
-	* Mechanika, gdy nie ma aktywnego meldunku
-	* Sprawdzenie czy osoba prowadz¹ca aktywowa³a meldunek, przypisuje siê jej od razu punkty,
-	* Karty sprawdzane s¹ czy karty wy³o¿one przez nieprowadz¹cego, maj¹ taki sam color, jak prowadz¹cego
-	* je¿eli tak, to sprawdzana jest wartoœæ tych kart
-	*
-	* Gracz, którego karta ma najwiêksz¹ wartoœæ, otwrzymuje punkty oraz on jest ustawiany na gracza prowadz¹cego
-	* w nastêpnej partii
-	*/
 	if (!wylozonycolor) {
 		if (whoFirst.first == true && whoFirst.second == true) {
 			if (cardP1.marriage == true) {
@@ -731,13 +710,11 @@ void GameMechanics::checkGame(Card& cardP1, Card& cardP2, Card& cardP3) {
 			}
 		}
 	}
-	/*
-	* Podliczenie punktów po ka¿dym wy³o¿eniu kart
-	*/
 	Points::sumPoints(cardP1.figure, cardP2.figure, cardP3.figure);
 }
 
 void GameMechanics::removeCard() {
+	std::cout << "remove card" << std::endl;
 	previousCardP1Ptr->cardImg.setPosition(sf::Vector2f(-100.0f, -100.0f));
 	previousCardP2Ptr->cardImg.setPosition(sf::Vector2f(-100.0f, -100.0f));
 	previousCardP3Ptr->cardImg.setPosition(sf::Vector2f(-100.0f, -100.0f));
